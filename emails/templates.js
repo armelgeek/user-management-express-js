@@ -19,7 +19,6 @@ const globalStyle = `
         padding: 6px 12px;
     }
 `;
-
 const resetPasswordTemplate = (resetToken) => `
     <html>
         <head>
@@ -35,7 +34,6 @@ const resetPasswordTemplate = (resetToken) => `
         </body>
     </html>
 `;
-
 const emailConfirmationTemplate = (activationToken) => `
     <html>
         <head>
@@ -51,6 +49,5 @@ const emailConfirmationTemplate = (activationToken) => `
         </body>
     </html>
 `;
-
 exports.resetPasswordTemplate = resetPasswordTemplate;
 exports.emailConfirmationTemplate = emailConfirmationTemplate;

@@ -4,11 +4,11 @@ const { promisify } = require("util");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Datastore = require('nedb-promises')
-
 const transport = require("../emails/transport");
 const db = {};
 db.users = Datastore.create('./data/users.db');
 db.users.corruptAlertThreshold=1;
+const TWO_DAYS = 1000 * 60 * 60 * 24 * 2;
 const {
   resetPasswordTemplate,
   emailConfirmationTemplate,
@@ -177,6 +177,13 @@ const updateUser = async (req, res, next) => {
   const name = req.body.name;
   const email = req.body.email;
   const password = req.body.password;
+  const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const err = new Error("La validation de l'entrée a échoué.");
+      err.statusCode = 422;
+      err.data = errors.array();
+      throw err;
+  }
   try {
     const updateDataUser = await db.users.findOne({ _id: userId }).then(response => response).catch(err => {
       throw err;
@@ -336,6 +343,21 @@ const activateAccount = async (req, res, next) => {
   }
 };
 
+const deleteInactiveUsers = async () => {
+  console.log(`Starting job: ${deleteInactiveUsers.name}`);
+  try {
+    const response = await db.users.remove({
+      active: false,
+      createdAt: { $lt: new Date(Date.now() - TWO_DAYS).toISOString() },
+    }, { multi: true } ).then(response => response).catch(err =>{
+      throw err;
+    });
+    console.log(`SUCCESS - Deleted ${response} users.`);
+  } catch (err) {
+    console.log(`ERROR - ${err.message}`);
+  }
+};
+
 exports.signup = signup;
 exports.login = login;
 exports.logout = logout;
@@ -344,3 +366,4 @@ exports.updateUser = updateUser;
 exports.getResetToken = getResetToken;
 exports.resetPassword = resetPassword;
 exports.activateAccount = activateAccount;
+exports.deleteInactiveUsers = deleteInactiveUsers;

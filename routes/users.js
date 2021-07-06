@@ -40,7 +40,7 @@ router.post("/logout", isAuth, usersController.logout);
 router.get("/account", isAuth, usersController.getUser);
 
 // PUT /users/account
-router.put("/account", isAuth, usersController.updateUser);
+router.put("/account", [isAuth,passwordValidator], usersController.updateUser);
 
 // POST /users/resetToken
 router.post("/resetToken", [emailValidator], usersController.getResetToken);
