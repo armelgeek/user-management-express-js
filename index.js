@@ -32,6 +32,9 @@ const dbb = {};
 dbb.products = Datastoree.create('data/products.db');
 dbb.currency = Datastoree.create('data/currency.db');
 dbb.categories = Datastoree.create('data/category.db');
+dbb.products.corruptAlertThreshold=1;
+dbb.categories.corruptAlertThreshold=1;
+dbb.currency.corruptAlertThreshold=1;
 const getCurrency = async () =>{
 const browser = await playwright.chromium.launch({ headless: true, args: ['--start-maximized'] });
   const page = await browser.newPage();
